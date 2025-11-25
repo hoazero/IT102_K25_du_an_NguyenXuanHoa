@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
+#include <stdlib.h>
 
 #define MAX 1000
 
@@ -29,9 +31,10 @@ struct Borrow{
 void inputBookData(struct Book b[], int *n);
 void updateBookData(struct Book b[], int n);
 void outputBookData(struct Book b[], int n);
-int searchBook(struct Book b[], int n, int id);
-int titleExists(char title[], struct Book books[], int n);
-
+int searchBook(struct Book b[], int n, int id);                // tim kiem id sach
+int titleExists(char title[], struct Book books[], int n);     // kiem tra ten sach trung nhau
+int isPositiveInteger(char str[]);
+int inputPositiveInt();
 
 int main (){
 	struct Book books[MAX];
@@ -101,7 +104,7 @@ int main (){
 				break;
 			}
 			case 9:{
-				
+				printf("Thoat!\n");
 				break;
 			}
 			default :{
@@ -114,6 +117,7 @@ int main (){
 	}while(choice != 9);
 	return 0;
 }
+
 int titleExists(char title[], struct Book books[], int n){
 
 	for(int i = 0; i < n; i++){
@@ -122,6 +126,51 @@ int titleExists(char title[], struct Book books[], int n){
 		}
 	}
 	return 0;
+}
+
+int isPositiveInteger(char str[]){
+	int i = 0;
+	
+	while (isspace(str[i])){
+		i++;
+	}
+	
+	if(str[i] == '\0'){
+		return 0;
+	}
+	
+	if(str[i] == '+' || str[i] == '-'){
+		return 0;
+	}
+	
+	for(; str[i] != '\0'; i++){
+		if(!isdigit(str[i])){                 // kiem tra ki tu co phai so nguyen khong
+			return 0;
+		}
+	}
+	return 1;
+}
+
+int inputPositiveInt(){
+	char buffer[100];
+	
+	while (1){
+		fgets(buffer, sizeof(buffer), stdin);
+		buffer[strcspn(buffer, "\n")] = '\0';
+		
+		if(isPositiveInteger(buffer)){
+			int value = atoi(buffer);
+			if(value > 0){
+				return value;
+			}else{
+				printf("vui long nhap so nguyen duong: ");
+			}
+		}
+		else{
+			printf("nhap sai! hay nhap so nguyen duong: \n");
+		}
+		
+	}
 }
 
 void inputBookData(struct Book b[], int *n){
@@ -154,15 +203,12 @@ void inputBookData(struct Book b[], int *n){
 	}while (strlen(newBook.author) == 0);
 	
 	do{
-		printf("nhap nam xuat ban: ");
+		printf("nhap nam xuat ban (>1900): ");
 		
-		if(scanf("%d", &newBook.publishYear) != 1){
-			while (getchar() != '\n');
-			printf("nhap so nguyen! \n");
-			continue;
-		}
-		if(newBook.publishYear <= 1900){
+		newBook.publishYear = inputPositiveInt();
+		if(newBook.publishYear <= 1900 ){
 			printf("phai lon hon 1900\n");
+			
 		}else{
 			break;
 		}
@@ -171,19 +217,16 @@ void inputBookData(struct Book b[], int *n){
 	do{
 		printf("nhap so luong: ");
 		
-		if(scanf("%d", &newBook.quantity) != 1){
-			while (getchar() != '\n');
-			printf("nhap so nguyen! \n");
-			continue;
-		}
+		newBook.quantity = inputPositiveInt();
 		if(newBook.quantity <= 0){
 			printf("phai lon hon 0\n");
+			
 		}else{
 			break;
 		}
 	}while (1);
 	
-	getchar();
+	
 	b[*n] = newBook;;
 	(*n)++;
 	printf("them thanh cong\n");
@@ -244,13 +287,10 @@ void updateBookData(struct Book b[], int n){
 	do{
 		printf("nhap nam xuat ban: ");
 		
-		if(scanf("%d", &b[index].publishYear) != 1){
-			while (getchar() != '\n');
-			printf("nhap so nguyen! \n");
-			continue;
-		}
-		if(b[index].publishYear <= 1900){
+		b[index].publishYear = inputPositiveInt();
+		if(b[index].publishYear <= 1900 || b[index].publishYear >= 2027){
 			printf("phai lon hon 1900\n");
+			
 		}else{
 			break;
 		}
@@ -259,18 +299,14 @@ void updateBookData(struct Book b[], int n){
 	do{
 		printf("nhap so luong: ");
 		
-		if(scanf("%d", &b[index].quantity) != 1){
-			while (getchar() != '\n');
-			printf("nhap so nguyen! \n");
-			continue;
-		}
+		b[index].quantity = inputPositiveInt();
 		if(b[index].quantity <= 0){
 			printf("phai lon hon 0\n");
 		}else{
 			break;
 		}
 	}while (1);
-	getchar();
+	
 	printf("Cap nhat sach thanh cong\n");
 }
 
